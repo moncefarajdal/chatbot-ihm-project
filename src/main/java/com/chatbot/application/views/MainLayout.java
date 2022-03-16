@@ -1,10 +1,12 @@
 package com.chatbot.application.views;
 
 
+import com.chatbot.application.security.SecurityService;
 import com.chatbot.application.views.chatbot.ChatbotView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Footer;
@@ -15,6 +17,7 @@ import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 
@@ -22,6 +25,8 @@ import com.vaadin.flow.router.RouterLink;
  * The main view is a top-level placeholder for other views.
  */
 public class MainLayout extends AppLayout {
+
+    private final SecurityService securityService;
 
     /**
      * A simple navigation item component, based on ListItem element.
@@ -68,13 +73,15 @@ public class MainLayout extends AppLayout {
 
     private H1 viewTitle;
 
-    public MainLayout() {
+    public MainLayout(SecurityService securityService) {
+        this.securityService = securityService;
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         addToDrawer(createDrawerContent());
     }
 
     private Component createHeaderContent() {
+
         DrawerToggle toggle = new DrawerToggle();
         toggle.addClassName("text-secondary");
         toggle.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
@@ -83,7 +90,13 @@ public class MainLayout extends AppLayout {
         viewTitle = new H1();
         viewTitle.addClassNames("m-0", "text-l");
 
-        Header header = new Header(toggle, viewTitle);
+        Button logout = new Button("Log Out", e -> securityService.logout());
+
+//        Header header = new Header(toggle, viewTitle, logout);
+        HorizontalLayout header = new HorizontalLayout(toggle, viewTitle, logout);
+        header.expand(viewTitle);
+        header.setWidth("100%");
+        header.addClassNames("py-0", "px-m");
         header.addClassNames("bg-base", "border-b", "border-contrast-10", "box-border", "flex", "h-xl", "items-center",
                 "w-full");
         return header;
